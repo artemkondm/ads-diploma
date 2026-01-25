@@ -25,7 +25,9 @@ public class AuthService : IAuthService
 
         var user = new User
         {
-            Email = request.Email
+            Name = request.Name,
+            Email = request.Email,
+            RegistrationDate = DateTime.Now
         };
         user.PasswordHash = _hasher.HashPassword(null!, request.Password);
         

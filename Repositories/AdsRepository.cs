@@ -1,6 +1,7 @@
 using Ads.Database;
 using Ads.Models;
 using Ads.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ads.Repositories;
 
@@ -26,6 +27,9 @@ public class AdsRepository : IAdsRepository
     }
     
     public async Task<Ad?> GetByIdAsync(int adId) => await _context.Ads.FindAsync(adId);
+
+    public async Task<List<Ad>> GetAllAdsByUserIdAsync(int userId) 
+        => await _context.Ads.Where(a => a.UserId == userId).ToListAsync();
     
     public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 }
