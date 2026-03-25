@@ -27,7 +27,7 @@ public class AuthService : IAuthService
         {
             Name = request.Name,
             Email = request.Email,
-            RegistrationDate = DateTime.Now
+            RegistrationDate = DateTime.UtcNow
         };
         user.PasswordHash = _hasher.HashPassword(null!, request.Password);
         

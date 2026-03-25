@@ -1,3 +1,6 @@
+using Ads.DTO.Profile;
+using Ads.Models;
+
 namespace Ads.DTO.Ads;
 
 public record AdResponse(
@@ -6,7 +9,8 @@ public record AdResponse(
     string Description,
     int Price,
     DateTime DateCreated,
-    int UserId
+    int UserId,
+    LocationResponse LocationResponse
     );
 
 public record AdListResponse(

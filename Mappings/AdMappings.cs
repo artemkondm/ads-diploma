@@ -13,7 +13,8 @@ public static class AdMappings
             ad.Description,
             ad.Price,
             ad.DateCreated,
-            ad.UserId
+            ad.UserId,
+            ad.Location.ToResponse()
         );
     }
 }

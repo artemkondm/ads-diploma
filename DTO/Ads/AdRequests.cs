@@ -3,7 +3,11 @@ namespace Ads.DTO.Ads;
 public record AdCreateRequest(
     string Title,
     string Description,
-    int Price
+    int Price,
+    string Region, 
+    string City,
+    string Street, 
+    string House
 );
 
 public class AdUpdateRequest

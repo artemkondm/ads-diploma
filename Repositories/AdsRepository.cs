@@ -17,7 +17,6 @@ public class AdsRepository : IAdsRepository
     public async Task AddAsync(Ad ad)
     {
         _context.Add(ad);
-        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(Ad ad)
@@ -25,8 +24,15 @@ public class AdsRepository : IAdsRepository
         _context.Remove(ad);
         await _context.SaveChangesAsync();
     }
-    
-    public async Task<Ad?> GetByIdAsync(int adId) => await _context.Ads.FindAsync(adId);
+
+    public async Task<Ad?> GetByIdAsync(int adId)
+    {
+        return await _context.Ads
+            .Include(a => a.Location)
+                .ThenInclude(l => l.City)
+                    .ThenInclude(c => c.Region)
+            .FirstOrDefaultAsync(a => a.Id == adId);
+    }
 
     public async Task<List<Ad>> GetAllAdsByUserIdAsync(int userId) 
         => await _context.Ads.Where(a => a.UserId == userId).ToListAsync();

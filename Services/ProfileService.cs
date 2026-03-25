@@ -9,12 +9,12 @@ namespace Ads.Services;
 public class ProfileService : IProfileService
 {
     private readonly IUserRepository _userRepository;
-    private readonly IAdsRepository _adsRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ProfileService(IUserRepository userRepository, IAdsRepository adsRepository)
+    public ProfileService(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
-        _adsRepository = adsRepository;
+        _unitOfWork = unitOfWork;
     }
     
     public async Task<ProfileResponse> GetProfileAsync(int userId)
@@ -23,7 +23,7 @@ public class ProfileService : IProfileService
         if (user == null)
             throw new Exception("User not found");
         
-        var ads = (await _adsRepository.GetAllAdsByUserIdAsync(userId))
+        var ads = (await _unitOfWork.Ads.GetAllAdsByUserIdAsync(userId))
             .Select(a => a.ToResponse())
             .ToList();
 

@@ -9,5 +9,5 @@ public class Ad
     public DateTime DateCreated { get; set; }
     public int UserId { get; set; } 
     public User User { get; set; } = null!;
-    
+    public Location Location { get; set; }
 }
