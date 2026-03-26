@@ -7,69 +7,47 @@ using Ads.Services.Interfaces;
 
 namespace Ads.Services;
 
-public class AdsService : IAdsService
+public class AdsService(IUserRepository userRepository, IGeoService geoService, IUnitOfWork unitOfWork)
+    : IAdsService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IGeoService _geoService;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AdsService(IUserRepository userRepository, IGeoService geoService, IUnitOfWork unitOfWork)
-    {
-        _userRepository = userRepository;
-        _geoService = geoService;
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<AdResponse> CreateAsync(int userId, AdCreateRequest request)
     {
-        var address = $"{request.Region}, {request.City}, {request.Street}, {request.House}";
+        var user = await userRepository.GetByIdAsync(userId);
+        if (user == null)
+            throw new Exception($"User with id {userId} not found");
         
-        var geoResult = await _geoService.GeocodeAsync(address);
+        var address = $"{request.Region}, {request.City}, {request.Street}, {request.House}";
+        var geoResult = await geoService.GeocodeAsync(address);
         if (geoResult is null)
             throw new Exception("Invalid address");
-        var region = await _unitOfWork.Regions.GetOrAddAsync(geoResult.Region);
-        var city = await _unitOfWork.Cities.GetOrAddAsync(geoResult.City, region);
-        var location = new Location
-            {
-                City = city,
-                Street = geoResult.Street,
-                House = geoResult.House,
-                Longitude = geoResult.Longitude,
-                Latitude = geoResult.Latitude,
-                YandexUri = geoResult.YandexUri,
-            };
         
-        var ad = new Ad
-        {
-            Title = request.Title,
-            Description = request.Description,
-            Price = request.Price,
-            DateCreated = DateTime.UtcNow,
-            User = _userRepository.GetByIdAsync(userId).Result!,
-            Location = location
-        };
+        var region = await unitOfWork.Regions.GetOrAddAsync(geoResult.Region);
+        var city = await unitOfWork.Cities.GetOrAddAsync(geoResult.City, region);
+        var location = geoResult.ToLocation(city);
         
-        await _unitOfWork.Ads.AddAsync(ad);
-        await _unitOfWork.Locations.AddLocationAsync(location);
-        await _unitOfWork.SaveChangesAsync();
+        var ad = request.ToAd(user, location);
+        
+        await unitOfWork.Ads.AddAsync(ad);
+        await unitOfWork.Locations.AddLocationAsync(location);
+        await unitOfWork.SaveChangesAsync();
         return ad.ToResponse();
     }
 
     public async Task DeleteAsync(int userId, int adId)
     {
-        var ad = await _unitOfWork.Ads.GetByIdAsync(adId);
+        var ad = await unitOfWork.Ads.GetByIdAsync(adId);
         if (ad == null)
             throw new Exception("Ad not found");
         
         if (userId != ad.UserId)
             throw new UnauthorizedAccessException();
         
-        await _unitOfWork.Ads.DeleteAsync(ad);
+        await unitOfWork.Ads.DeleteAsync(ad);
     }
 
     public async Task<AdResponse> GetByIdAsync(int adId)
     {
-        var ad = await _unitOfWork.Ads.GetByIdAsync(adId);
+        var ad = await unitOfWork.Ads.GetByIdAsync(adId);
         if (ad == null)
             throw new Exception("Ad not found");
         
@@ -78,7 +56,7 @@ public class AdsService : IAdsService
 
     public async Task<AdResponse> UpdateAsync(int userId, int adId, AdUpdateRequest request)
     {
-        var ad = await _unitOfWork.Ads.GetByIdAsync(adId);
+        var ad = await unitOfWork.Ads.GetByIdAsync(adId);
         if (ad == null)
             throw new Exception("Ad not found");
         
@@ -89,7 +67,7 @@ public class AdsService : IAdsService
         ad.Description = request.Description;
         ad.Price = request.Price;
         
-        await _unitOfWork.SaveChangesAsync();
+        await unitOfWork.SaveChangesAsync();
         return ad.ToResponse();
     }
 }

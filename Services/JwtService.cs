@@ -7,14 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Ads.Services;
 
-public class JwtService
+public class JwtService(IOptions<AuthSettings> options)
 {
-    private readonly AuthSettings _options;
+    private readonly AuthSettings _options = options.Value;
 
-    public JwtService(IOptions<AuthSettings> options)
-    {
-        _options = options.Value;
-    }
     public string GenerateToken(User user)
     {
         var claims = new List<Claim>()

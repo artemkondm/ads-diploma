@@ -4,6 +4,7 @@ public record AdCreateRequest(
     string Title,
     string Description,
     int Price,
+    int CategoryId,
     string Region, 
     string City,
     string Street, 

@@ -17,7 +17,6 @@ public class GeoService : IGeoService
 
     public async Task<GeocodeResult?> GeocodeAsync(string address)
 {
-    // 1. Проверяем, что ключ вообще есть в конфиге
     if (string.IsNullOrEmpty(_apiKey)) 
         throw new InvalidOperationException("API Key for Yandex Maps is missing in configuration.");
 
@@ -28,8 +27,7 @@ public class GeoService : IGeoService
 
     var jsonString = await response.Content.ReadAsStringAsync();
     using var json = JsonDocument.Parse(jsonString);
-
-    // Безопасно проваливаемся до featureMember
+    
     if (!json.RootElement.TryGetProperty("response", out var resp) ||
         !resp.TryGetProperty("GeoObjectCollection", out var coll) ||
         !coll.TryGetProperty("featureMember", out var featureMember) ||
@@ -39,12 +37,10 @@ public class GeoService : IGeoService
     }
 
     var geoObject = featureMember[0].GetProperty("GeoObject");
-
-    // Извлекаем координаты
+    
     var pos = geoObject.GetProperty("Point").GetProperty("pos").GetString();
     if (string.IsNullOrEmpty(pos)) return null;
-
-    // Извлекаем компоненты адреса
+    
     var metaData = geoObject.GetProperty("metaDataProperty").GetProperty("GeocoderMetaData");
     var addressDetails = metaData.GetProperty("Address");
     
@@ -66,7 +62,7 @@ public class GeoService : IGeoService
         }
     }
 
-    var coords = pos.Split(' '); // ВНИМАНИЕ: Яндекс часто отдает координаты через пробел, а не запятую
+    var coords = pos.Split(' ');
     if (coords.Length < 2) return null;
 
     result.Longitude = double.Parse(coords[0], System.Globalization.CultureInfo.InvariantCulture);

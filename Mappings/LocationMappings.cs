@@ -16,4 +16,17 @@ public static class LocationMappings
             location.Longitude
         );
     }
+
+    public static Location ToLocation(this GeocodeResult geoResult, City city)
+    {
+        return new Location()
+        {
+            City = city,
+            Street = geoResult.Street,
+            House = geoResult.House,
+            Latitude = geoResult.Latitude,
+            Longitude = geoResult.Longitude,
+            YandexUri = geoResult.YandexUri,
+        };
+    }
 }

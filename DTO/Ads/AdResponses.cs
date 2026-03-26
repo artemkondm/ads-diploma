@@ -8,6 +8,7 @@ public record AdResponse(
     string Title,
     string Description,
     int Price,
+    int CategoryId,
     DateTime DateCreated,
     int UserId,
     LocationResponse LocationResponse

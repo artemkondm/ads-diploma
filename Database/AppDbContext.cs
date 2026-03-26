@@ -13,5 +13,14 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+        modelBuilder.Entity<Category>().HasData(
+            new Category { Id = 1, Name = "Транспорт", ParentId = null },
+            new Category { Id = 2, Name = "Легковые авто", ParentId = 1 },
+            new Category { Id = 3, Name = "Мотоциклы", ParentId = 1 },
+            new Category { Id = 4, Name = "Электроника", ParentId = null },
+            new Category { Id = 5, Name = "Смартфоны", ParentId = 4 },
+            new Category { Id = 6, Name = "Компьютеры", ParentId = 4 }
+        );
     }
 }

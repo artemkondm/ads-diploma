@@ -6,21 +6,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Ads.Services;
 
-public class AuthService : IAuthService
+public class AuthService(IUserRepository userRepository, IPasswordHasher<User> hasher, JwtService jwtService)
+    : IAuthService
 {
-    private readonly IUserRepository _userRepository;
-    private readonly IPasswordHasher<User> _hasher;
-    private readonly JwtService _jwtService;
-
-    public AuthService(IUserRepository userRepository, IPasswordHasher<User> hasher, JwtService jwtService)
-    {
-        _userRepository = userRepository;
-        _hasher = hasher;
-        _jwtService = jwtService;
-    }
     public async Task RegisterAsync(RegisterRequest request)
     {
-        if (await _userRepository.ExistsByEmailAsync(request.Email))
+        if (await userRepository.ExistsByEmailAsync(request.Email))
             throw new Exception("Email already exists");
 
         var user = new User
@@ -29,22 +20,22 @@ public class AuthService : IAuthService
             Email = request.Email,
             RegistrationDate = DateTime.UtcNow
         };
-        user.PasswordHash = _hasher.HashPassword(null!, request.Password);
+        user.PasswordHash = hasher.HashPassword(null!, request.Password);
         
-        await _userRepository.AddAsync(user);
+        await userRepository.AddAsync(user);
     }
 
     public async Task<string> LoginAsync(LoginRequest request)
     {
-        var user = await _userRepository.GetByEmailAsync(request.Email);
+        var user = await userRepository.GetByEmailAsync(request.Email);
         
         if (user == null)
             throw new Exception("Invalid email or password");
         
-        var isValid = _hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+        var isValid = hasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
         if (isValid == PasswordVerificationResult.Failed)
             throw new Exception("Invalid email or password");
         
-        return _jwtService.GenerateToken(user);
+        return jwtService.GenerateToken(user);
     }
 }
