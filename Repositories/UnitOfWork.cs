@@ -11,6 +11,8 @@ public class UnitOfWork : IUnitOfWork
     public ICityRepository Cities { get; }
     public ILocationRepository Locations { get; }
     public IAdsRepository Ads { get; }
+    public IMessageRepository Messages { get; }
+    public IChatRepository Chats { get; }
 
     public UnitOfWork(AppDbContext context)
     {
@@ -19,6 +21,8 @@ public class UnitOfWork : IUnitOfWork
         Cities = new CityRepository(_context);
         Locations = new LocationRepository(_context);
         Ads = new AdsRepository(_context);
+        Messages = new MessageRepository(_context);
+        Chats = new ChatRepository(_context);
     }
 
     public async Task<int> SaveChangesAsync()

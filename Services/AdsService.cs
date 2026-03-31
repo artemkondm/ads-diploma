@@ -70,4 +70,15 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         await unitOfWork.SaveChangesAsync();
         return ad.ToResponse();
     }
+
+    public async Task<List<AdResponse>> GetAllAdsAsync()
+    {
+        var ads = await unitOfWork.Ads.GetAllAdsAsync();
+        var res = new List<AdResponse>();
+        foreach (var ad in ads)
+        {
+            res.Add(ad.ToResponse());
+        }
+        return res;
+    }
 }

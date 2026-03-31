@@ -6,6 +6,8 @@ public interface IUnitOfWork : IDisposable
     ICityRepository Cities { get; }
     ILocationRepository Locations { get; }
     IAdsRepository Ads { get; }
+    IMessageRepository Messages { get; }
+    IChatRepository Chats { get; }
 
     Task<int> SaveChangesAsync();
 }

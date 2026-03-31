@@ -9,4 +9,5 @@ public interface IAdsService
     Task<AdResponse> UpdateAsync(int userId, int adId, AdUpdateRequest request);
     Task DeleteAsync(int userId, int adId);
     Task<AdResponse> GetByIdAsync(int adId);
+    Task<List<AdResponse>> GetAllAdsAsync();
 }

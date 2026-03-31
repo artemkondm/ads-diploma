@@ -5,15 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Ads.Repositories;
 
-public class UserRepository : IUserRepository
+public class UserRepository(AppDbContext context) : IUserRepository
 {
-    private readonly AppDbContext _context;
+    private readonly AppDbContext _context = context;
 
-    public UserRepository(AppDbContext context)
-    {
-        _context = context;
-    }
-    
     public async Task<bool> ExistsByEmailAsync(string email)
         => await _context.Users.AnyAsync(u => u.Email == email);
 

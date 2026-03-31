@@ -38,4 +38,10 @@ public class AdsRepository : IAdsRepository
         => await _context.Ads.Where(a => a.UserId == userId).ToListAsync();
     
     public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+    
+    public async Task<List<Ad>> GetAllAdsAsync() => await _context.Ads
+        .Include(a => a.Location)
+        .ThenInclude(l => l.City)
+        .ThenInclude(c => c.Region)
+        .ToListAsync();
 }

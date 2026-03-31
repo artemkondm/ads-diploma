@@ -9,5 +9,6 @@ public interface IAdsRepository
     Task DeleteAsync(Ad ad);
     Task<Ad?> GetByIdAsync(int adId);
     Task<List<Ad>> GetAllAdsByUserIdAsync(int userId);
+    Task<List<Ad>> GetAllAdsAsync();
     Task SaveChangesAsync();
 }

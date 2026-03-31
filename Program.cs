@@ -1,11 +1,13 @@
 using Ads;
 using Ads.Database;
+using Ads.Hubs;
 using Ads.Models;
 using Ads.Repositories;
 using Ads.Repositories.Interfaces;
 using Ads.Services;
 using Ads.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,13 +23,21 @@ builder.Services.AddHttpClient<IGeoService, GeoService>()
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("AuthSettings"));
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("Default")));
+        builder.Configuration.GetConnectionString("Default"), npgsqlOptions =>
+        {
+            npgsqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorCodesToAdd: null);
+        }));
+builder.Services.AddSignalR();
 
 builder.Services.AddAuth(builder.Configuration); 
 builder.Services.AddEndpointsApiExplorer();
@@ -43,7 +53,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:5173", "http://localhost:5174")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -59,7 +70,6 @@ app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
@@ -78,6 +88,8 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"Ошибка при инициализации БД: {ex.Message}");
     }
 }
+
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
 

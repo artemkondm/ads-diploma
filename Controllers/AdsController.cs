@@ -57,4 +57,11 @@ public class AdsController : ControllerBase
         await _adsService.DeleteAsync(userId, adId);
         return NoContent();
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAds()
+    {
+        var ads = await _adsService.GetAllAdsAsync();
+        return Ok(ads);
+    }
 }

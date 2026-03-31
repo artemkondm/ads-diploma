@@ -10,6 +10,8 @@ public class AppDbContext : DbContext
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<City> Cities => Set<City>();
     public DbSet<Region> Regions => Set<Region>();
+    public DbSet<Message> Messages => Set<Message>();
+    public DbSet<Chat> Chats => Set<Chat>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

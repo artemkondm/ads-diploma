@@ -4,5 +4,5 @@ namespace Ads.Services.Interfaces;
 
 public interface IGeoService
 {
-    Task<GeocodeResult> GeocodeAsync(string address);
+    Task<GeocodeResult?> GeocodeAsync(string address);
 }
