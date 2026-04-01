@@ -21,7 +21,7 @@ public class AdsController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> CreateAdAsync(AdCreateRequest request)
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         
         var ad = await _adsService.CreateAsync(userId, request);
 
@@ -43,7 +43,7 @@ public class AdsController : ControllerBase
     [HttpPut("{adId}")]
     public async Task<IActionResult> UpdateAdAsync(int adId, AdUpdateRequest request)
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         
         var ad = await _adsService.UpdateAsync(userId, adId, request);
         return Ok(ad);
@@ -53,7 +53,7 @@ public class AdsController : ControllerBase
     [HttpDelete("{adId}")]
     public async Task<IActionResult> DeleteAdAsync(int adId)
     {
-        var userId = int.Parse(User.FindFirst("userId")!.Value);
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         await _adsService.DeleteAsync(userId, adId);
         return NoContent();
     }

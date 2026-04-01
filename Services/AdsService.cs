@@ -4,10 +4,11 @@ using Ads.Models;
 using Ads.Repositories;
 using Ads.Repositories.Interfaces;
 using Ads.Services.Interfaces;
+using Elastic.Clients.Elasticsearch;
 
 namespace Ads.Services;
 
-public class AdsService(IUserRepository userRepository, IGeoService geoService, IUnitOfWork unitOfWork)
+public class AdsService(IUserRepository userRepository, IGeoService geoService, IUnitOfWork unitOfWork, ISearchService searchService)
     : IAdsService
 {
     public async Task<AdResponse> CreateAsync(int userId, AdCreateRequest request)
@@ -30,6 +31,8 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         await unitOfWork.Ads.AddAsync(ad);
         await unitOfWork.Locations.AddLocationAsync(location);
         await unitOfWork.SaveChangesAsync();
+
+        await searchService.IndexAdAsync(ad);
         return ad.ToResponse();
     }
 
@@ -68,6 +71,7 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         ad.Price = request.Price;
         
         await unitOfWork.SaveChangesAsync();
+        await searchService.IndexAdAsync(ad);
         return ad.ToResponse();
     }
 

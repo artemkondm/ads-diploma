@@ -6,6 +6,7 @@ using Ads.Repositories;
 using Ads.Repositories.Interfaces;
 using Ads.Services;
 using Ads.Services.Interfaces;
+using Elastic.Clients.Elasticsearch;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdsService, AdsService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddHttpClient<IGeoService, GeoService>()
     .ConfigureHttpClient(c =>
     {
@@ -38,6 +40,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                 errorCodesToAdd: null);
         }));
 builder.Services.AddSignalR();
+var settings = new ElasticsearchClientSettings(new Uri("http://localhost:9200"))
+    .DefaultIndex("ads_index");
+var client = new ElasticsearchClient(settings);
+builder.Services.AddSingleton(client);
 
 builder.Services.AddAuth(builder.Configuration); 
 builder.Services.AddEndpointsApiExplorer();
