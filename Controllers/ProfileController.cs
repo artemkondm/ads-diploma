@@ -18,7 +18,8 @@ public class ProfileController : ControllerBase
     [HttpGet("{userId}")]
     public async Task<IActionResult> GetProfile(int userId)
     {
-        var profile =  await _profileService.GetProfileAsync(userId);
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var profile =  await _profileService.GetProfileAsync(userId, baseUrl);
         return Ok(profile);
     }
 }

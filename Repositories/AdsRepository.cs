@@ -28,6 +28,7 @@ public class AdsRepository : IAdsRepository
     public async Task<Ad?> GetByIdAsync(int adId)
     {
         return await _context.Ads
+            .Include(a => a.Images)
             .Include(a => a.Location)
                 .ThenInclude(l => l.City)
                     .ThenInclude(c => c.Region)

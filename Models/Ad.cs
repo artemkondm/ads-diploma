@@ -12,4 +12,6 @@ public class Ad
     public Location Location { get; set; }
     public int CategoryId { get; set; }
     public Category Category { get; set; } = null!;
+    public string ThumbnailUrl { get; set; } = null!;
+    public List<AdImage> Images { get; set; } = [];
 }

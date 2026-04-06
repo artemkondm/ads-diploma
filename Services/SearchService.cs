@@ -27,7 +27,7 @@ public class SearchService(ElasticsearchClient elasticClient, IUnitOfWork unitOf
         {
             return response.Documents;
         }
-        return Enumerable.Empty<AdSearchModel>();
+        return [];
     }
 
     public async Task IndexAdAsync(Ad ad)
@@ -41,10 +41,11 @@ public class SearchService(ElasticsearchClient elasticClient, IUnitOfWork unitOf
             CategoryId = ad.CategoryId,
             City = ad.Location.City.Name,
             Street = ad.Location.Street,
-            House = ad.Location.House
+            House = ad.Location.House,
+            ThumbnailUrl = ad.ThumbnailUrl
         };
         
-        var response = await elasticClient.IndexAsync(searchModel, a => a
+        await elasticClient.IndexAsync(searchModel, a => a
             .Index("ads_index")
             .Id(searchModel.Id));
     }
@@ -64,6 +65,6 @@ public class SearchService(ElasticsearchClient elasticClient, IUnitOfWork unitOf
             House = ad.Location.House
         }).ToList();
         
-        var response = await elasticClient.IndexManyAsync(searchModels, "ads_index");
+        await elasticClient.IndexManyAsync(searchModels, "ads_index");
     }
 }

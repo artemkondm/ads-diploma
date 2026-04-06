@@ -26,6 +26,7 @@ builder.Services.AddHttpClient<IGeoService, GeoService>()
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<JwtService>();
@@ -69,7 +70,7 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseCors("AllowFront");
-
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 

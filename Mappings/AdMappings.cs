@@ -5,8 +5,14 @@ namespace Ads.Mappings;
 
 public static class AdMappings
 {
-    public static AdResponse ToResponse(this Ad ad)
+    public static AdResponse ToResponse(this Ad ad, string baseUrl)
     {
+        var images = ad.Images.Select(img => new ImageResponse(
+            Url: $"{baseUrl}{img.Url}",
+            ThumbnailUrl: img.ThumbnailUrl != null ? $"{baseUrl}{img.ThumbnailUrl}" : null,
+            IsMain: img.IsMain
+        )).ToList();
+        
         return new AdResponse(
             ad.Id,
             ad.Title,
@@ -15,11 +21,25 @@ public static class AdMappings
             ad.CategoryId,
             ad.DateCreated,
             ad.UserId,
-            ad.Location.ToResponse()
+            ad.Location.ToResponse(),
+            images
         );
     }
 
     public static Ad ToAd(this AdCreateRequest request, User user, Location location)
+    {
+        return new Ad()
+        {
+            Title = request.Title,
+            Description = request.Description,
+            Price = request.Price,
+            CategoryId = request.CategoryId,
+            DateCreated = DateTime.UtcNow,
+            User = user,
+            Location = location
+        };
+    }
+    public static Ad ToAd(this CreateAdRequest request, User user, Location location)
     {
         return new Ad()
         {

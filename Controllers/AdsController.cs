@@ -1,4 +1,5 @@
 using Ads.DTO.Ads;
+using Ads.Mappings;
 using Ads.Models;
 using Ads.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -19,16 +20,18 @@ public class AdsController : ControllerBase
 
     [Authorize]
     [HttpPost("create")]
-    public async Task<IActionResult> CreateAdAsync(AdCreateRequest request)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> CreateAdAsync(CreateAdRequest request)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         
         var ad = await _adsService.CreateAsync(userId, request);
-
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
         return CreatedAtAction(
             nameof(GetById),
             new { adId = ad.Id },
-            ad
+            ad.ToResponse(baseUrl)
         );
     }
 
@@ -36,7 +39,8 @@ public class AdsController : ControllerBase
     public async Task<IActionResult> GetById(int adId)
     {
         var ad = await _adsService.GetByIdAsync(adId);
-        return Ok(ad);
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        return Ok(ad.ToResponse(baseUrl));
     }
 
     [Authorize]
@@ -46,7 +50,8 @@ public class AdsController : ControllerBase
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         
         var ad = await _adsService.UpdateAsync(userId, adId, request);
-        return Ok(ad);
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        return Ok(ad.ToResponse(baseUrl));
     }
     
     [Authorize]
@@ -61,7 +66,8 @@ public class AdsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAds()
     {
-        var ads = await _adsService.GetAllAdsAsync();
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var ads = await _adsService.GetAllAdsAsync(baseUrl);
         return Ok(ads);
     }
 }

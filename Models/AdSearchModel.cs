@@ -10,4 +10,5 @@ public class AdSearchModel
     public string City { get; set; } = null!;
     public string Street { get; set; } = null!;
     public string House { get; set; } = null!;
+    public string ThumbnailUrl { get; set; } = null!;
 }

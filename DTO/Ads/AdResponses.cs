@@ -11,10 +11,18 @@ public record AdResponse(
     int CategoryId,
     DateTime DateCreated,
     int UserId,
-    LocationResponse LocationResponse
+    LocationResponse LocationResponse,
+    List<ImageResponse> Images
     );
+
 
 public record AdListResponse(
     string Title,
     int Price
     );
+    
+public record ImageResponse(
+    string Url,
+    string? ThumbnailUrl,
+    bool IsMain
+);

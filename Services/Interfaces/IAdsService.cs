@@ -5,9 +5,9 @@ namespace Ads.Services.Interfaces;
 
 public interface IAdsService
 {
-    Task<AdResponse> CreateAsync(int userId, AdCreateRequest request);
-    Task<AdResponse> UpdateAsync(int userId, int adId, AdUpdateRequest request);
+    Task<Ad> CreateAsync(int userId, CreateAdRequest request);
+    Task<Ad> UpdateAsync(int userId, int adId, AdUpdateRequest request);
     Task DeleteAsync(int userId, int adId);
-    Task<AdResponse> GetByIdAsync(int adId);
-    Task<List<AdResponse>> GetAllAdsAsync();
+    Task<Ad> GetByIdAsync(int adId);
+    Task<List<AdResponse>> GetAllAdsAsync(string baseUrl);
 }
