@@ -23,4 +23,8 @@ public class UserRepository(AppDbContext context) : IUserRepository
     
     public async Task<User?> GetByIdAsync(int userId) 
         => await _context.Users.FindAsync(userId);
+    public async Task<int> SaveChangesAsync()
+    {
+        return await _context.SaveChangesAsync();
+    }
 }

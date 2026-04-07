@@ -7,6 +7,7 @@ public static class AdMappings
 {
     public static AdResponse ToResponse(this Ad ad, string baseUrl)
     {
+        
         var images = ad.Images.Select(img => new ImageResponse(
             Url: $"{baseUrl}{img.Url}",
             ThumbnailUrl: img.ThumbnailUrl != null ? $"{baseUrl}{img.ThumbnailUrl}" : null,

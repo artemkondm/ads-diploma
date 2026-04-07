@@ -10,14 +10,8 @@ namespace Ads.Controllers;
 
 [ApiController]
 [Route("api/ads")]
-public class AdsController : ControllerBase
+public class AdsController(IAdsService adsService) : ControllerBase
 {
-    private readonly IAdsService _adsService;
-    public AdsController(IAdsService adsService)
-    {
-        _adsService = adsService;
-    }
-
     [Authorize]
     [HttpPost("create")]
     [Consumes("multipart/form-data")]
@@ -26,21 +20,19 @@ public class AdsController : ControllerBase
         if (!ModelState.IsValid) return BadRequest(ModelState);
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         
-        var ad = await _adsService.CreateAsync(userId, request);
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var ad = await adsService.CreateAsync(userId, request);
         return CreatedAtAction(
             nameof(GetById),
             new { adId = ad.Id },
-            ad.ToResponse(baseUrl)
+            ad
         );
     }
 
     [HttpGet("{adId}")]
     public async Task<IActionResult> GetById(int adId)
     {
-        var ad = await _adsService.GetByIdAsync(adId);
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        return Ok(ad.ToResponse(baseUrl));
+        var ad = await adsService.GetByIdAsync(adId);
+        return Ok(ad);
     }
 
     [Authorize]
@@ -49,9 +41,8 @@ public class AdsController : ControllerBase
     {
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
         
-        var ad = await _adsService.UpdateAsync(userId, adId, request);
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        return Ok(ad.ToResponse(baseUrl));
+        var ad = await adsService.UpdateAsync(userId, adId, request);
+        return Ok(ad);
     }
     
     [Authorize]
@@ -59,15 +50,14 @@ public class AdsController : ControllerBase
     public async Task<IActionResult> DeleteAdAsync(int adId)
     {
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
-        await _adsService.DeleteAsync(userId, adId);
+        await adsService.DeleteAsync(userId, adId);
         return NoContent();
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAds()
     {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        var ads = await _adsService.GetAllAdsAsync(baseUrl);
+        var ads = await adsService.GetAllAdsAsync();
         return Ok(ads);
     }
 }

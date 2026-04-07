@@ -4,16 +4,9 @@ using Ads.Services.Interfaces;
 
 namespace Ads.Services;
 
-public class GeoService : IGeoService
+public class GeoService(HttpClient client, IConfiguration config) : IGeoService
 {
-    private readonly HttpClient _httpClient;
-    private readonly string _apiKey;
-
-    public GeoService(HttpClient client, IConfiguration config)
-    {
-        _httpClient = client;
-        _apiKey = config["Yandex:ApiKey"];    
-    }
+    private readonly string _apiKey = config["Yandex:ApiKey"];
 
     public async Task<GeocodeResult?> GeocodeAsync(string address)
 {
@@ -22,7 +15,7 @@ public class GeoService : IGeoService
 
     var url = $"https://geocode-maps.yandex.ru/1.x/?apikey={_apiKey}&geocode={Uri.EscapeDataString(address)}&format=json";
     
-    var response = await _httpClient.GetAsync(url);
+    var response = await client.GetAsync(url);
     if (!response.IsSuccessStatusCode) return null;
 
     var jsonString = await response.Content.ReadAsStringAsync();

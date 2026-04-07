@@ -17,23 +17,21 @@ public class ImageService : IImageService
     {
         var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
         var fullPath = Path.Combine(_storagePath, fileName);
+        string? thumbName = null;
         
         using var image = await Image.LoadAsync(file.OpenReadStream());
         
         if (image.Width > 1920) image.Mutate(x => x.Resize(1920, 0));
         await image.SaveAsync(fullPath);
-
-        string? thumbnailUrl = null;
+        
         if (createThumbnail)
         {
-            var thumbName = $"thumb_{fileName}";
+            thumbName = $"thumb_{fileName}";
             var thumbPath = Path.Combine(_storagePath, thumbName);
             
             using var thumbnail = image.Clone(x => x.Resize(300, 0));
             await thumbnail.SaveAsync(thumbPath);
-            
-            thumbnailUrl = $"/images/ads/{thumbName}";
         }
-        return ($"/images/ads/{fileName}", thumbnailUrl);
+        return (fileName, thumbName);
     }
 }

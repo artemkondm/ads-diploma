@@ -8,10 +8,12 @@ using Elastic.Clients.Elasticsearch;
 
 namespace Ads.Services;
 
-public class AdsService(IUserRepository userRepository, IGeoService geoService, IUnitOfWork unitOfWork, ISearchService searchService, IImageService imageService)
+public class AdsService(IUserRepository userRepository, IGeoService geoService, IUnitOfWork unitOfWork, 
+    ISearchService searchService, IImageService imageService, IConfiguration config)
     : IAdsService
 {
-    public async Task<Ad> CreateAsync(int userId, CreateAdRequest request)
+    private readonly string _baseImageUrl = config["BaseUrls:Images"];
+    public async Task<AdResponse> CreateAsync(int userId, CreateAdRequest request)
     {
         const int maxImages = 10;
 
@@ -61,7 +63,7 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         await unitOfWork.SaveChangesAsync();
 
         await searchService.IndexAdAsync(ad);
-        return ad;
+        return ad.ToResponse(_baseImageUrl);
     }
 
     public async Task DeleteAsync(int userId, int adId)
@@ -76,16 +78,16 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         await unitOfWork.Ads.DeleteAsync(ad);
     }
 
-    public async Task<Ad> GetByIdAsync(int adId)
+    public async Task<AdResponse> GetByIdAsync(int adId)
     {
         var ad = await unitOfWork.Ads.GetByIdAsync(adId);
         if (ad == null)
             throw new Exception("Ad not found");
         
-        return ad;
+        return ad.ToResponse(_baseImageUrl);
     }
 
-    public async Task<Ad> UpdateAsync(int userId, int adId, AdUpdateRequest request)
+    public async Task<AdResponse> UpdateAsync(int userId, int adId, AdUpdateRequest request)
     {
         var ad = await unitOfWork.Ads.GetByIdAsync(adId);
         if (ad == null)
@@ -100,16 +102,16 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         
         await unitOfWork.SaveChangesAsync();
         await searchService.IndexAdAsync(ad);
-        return ad;
+        return ad.ToResponse(_baseImageUrl);
     }
 
-    public async Task<List<AdResponse>> GetAllAdsAsync(string baseUrl)
+    public async Task<List<AdResponse>> GetAllAdsAsync()
     {
         var ads = await unitOfWork.Ads.GetAllAdsAsync();
         var res = new List<AdResponse>();
         foreach (var ad in ads)
         {
-            res.Add(ad.ToResponse(baseUrl));
+            res.Add(ad.ToResponse(_baseImageUrl));
         }
         return res;
     }
