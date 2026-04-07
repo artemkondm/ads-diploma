@@ -44,7 +44,7 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         {
             ValidateImage(image);
             var isMain = ad.Images.Count == 0;
-            var imagePaths =  await imageService.UploadImageAsync(image, isMain);
+            var imagePaths =  await imageService.UploadImageAsync(image);
             var adImage = new AdImage
             {
                 Url = imagePaths.OriginalUrl,

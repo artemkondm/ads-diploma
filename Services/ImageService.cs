@@ -13,9 +13,9 @@ public class ImageService : IImageService
     {
         if (!Directory.Exists(_storagePath)) Directory.CreateDirectory(_storagePath);
     }
-    public async Task<(string OriginalUrl, string? ThumbnailUrl)> UploadImageAsync(IFormFile file, bool createThumbnail = false)
+    public async Task<(string OriginalUrl, string? ThumbnailUrl)> UploadImageAsync(IFormFile file)
     {
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var fileName = $"/{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
         var fullPath = Path.Combine(_storagePath, fileName);
         string? thumbName = null;
         
@@ -23,15 +23,12 @@ public class ImageService : IImageService
         
         if (image.Width > 1920) image.Mutate(x => x.Resize(1920, 0));
         await image.SaveAsync(fullPath);
+
+        thumbName = $"/thumb_{fileName}";
+        var thumbPath = Path.Combine(_storagePath, thumbName);
         
-        if (createThumbnail)
-        {
-            thumbName = $"thumb_{fileName}";
-            var thumbPath = Path.Combine(_storagePath, thumbName);
-            
-            using var thumbnail = image.Clone(x => x.Resize(300, 0));
-            await thumbnail.SaveAsync(thumbPath);
-        }
+        using var thumbnail = image.Clone(x => x.Resize(300, 0));
+        await thumbnail.SaveAsync(thumbPath);
         return (fileName, thumbName);
     }
 }
