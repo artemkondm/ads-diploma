@@ -1,4 +1,5 @@
 using Ads.DTO.Profile;
+using Ads.Enums;
 using Ads.Mappings;
 using Ads.Models;
 using Ads.Repositories;
@@ -37,5 +38,14 @@ public class ProfileService(IUserRepository userRepository, IUnitOfWork unitOfWo
             .Select(a => a.ToResponse(_baseImageUrl))
             .ToList();
         return user.ToProfile(ads);
+    }
+
+    public async Task ChangeStatusAsync(int userId, UserStatus status)
+    {
+        var user = await userRepository.GetByIdAsync(userId);
+        if (user == null)
+            throw new Exception("User not found");
+        user.Status = status;
+        await userRepository.SaveChangesAsync();
     }
 }

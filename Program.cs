@@ -71,6 +71,7 @@ var app = builder.Build();
 
 app.UseCors("AllowFront");
 app.UseStaticFiles();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 

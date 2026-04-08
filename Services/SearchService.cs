@@ -1,3 +1,4 @@
+using Ads.Enums;
 using Ads.Models;
 using Ads.Repositories;
 using Ads.Repositories.Interfaces;
@@ -15,10 +16,18 @@ public class SearchService(ElasticsearchClient elasticClient, IUnitOfWork unitOf
         var response = await elasticClient.SearchAsync<AdSearchModel>(s => s
             .Index("ads_index")
             .Query(q => q
-                .MultiMatch(m => m
-                    .Fields(new[] {"title", "description"})
-                    .Query(query)
-                    .Fuzziness(new Fuzziness("AUTO"))
+                .Bool(b => b
+                    .Must(m => m
+                        .MultiMatch(mm => mm
+                            .Fields(new[] { "title", "description" })
+                            .Query(query)
+                            .Fuzziness(new Fuzziness("AUTO"))
+                        )
+                    )
+                    .Filter(
+                        f => f.Term(t => t.Field(field => field.IsDeleted).Value(false)),
+                        f => f.Term(t => t.Field(field => field.AdStatus).Value(AdStatus.Active.ToString()))
+                    )
                 )
             )
         );

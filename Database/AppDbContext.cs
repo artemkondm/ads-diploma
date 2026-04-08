@@ -15,6 +15,18 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<User>()
+            .Property(u => u.Role)
+            .HasConversion<string>();
+        modelBuilder.Entity<User>()
+            .Property(u => u.Status)
+            .HasConversion<string>();
+        
+        
+        modelBuilder.Entity<Ad>()
+            .Property(a => a.Status)
+            .HasConversion<string>();
         
         modelBuilder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Транспорт", ParentId = null },

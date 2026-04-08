@@ -1,3 +1,5 @@
+using Ads.Enums;
+
 namespace Ads.Models;
 
 public class AdSearchModel
@@ -11,4 +13,6 @@ public class AdSearchModel
     public string Street { get; set; } = null!;
     public string House { get; set; } = null!;
     public string ThumbnailUrl { get; set; } = null!;
+    public AdStatus AdStatus { get; set; }
+    public bool IsDeleted { get; set; }
 }

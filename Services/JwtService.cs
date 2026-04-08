@@ -16,7 +16,8 @@ public class JwtService(IOptions<AuthSettings> options)
         var claims = new List<Claim>()
         {
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
         var jwtToken = new JwtSecurityToken(

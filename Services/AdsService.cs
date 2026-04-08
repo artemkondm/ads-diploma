@@ -1,10 +1,12 @@
 using Ads.DTO.Ads;
+using Ads.Enums;
 using Ads.Mappings;
 using Ads.Models;
 using Ads.Repositories;
 using Ads.Repositories.Interfaces;
 using Ads.Services.Interfaces;
 using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Snapshot;
 
 namespace Ads.Services;
 
@@ -75,9 +77,18 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         if (userId != ad.UserId)
             throw new UnauthorizedAccessException();
         
-        await unitOfWork.Ads.DeleteAsync(ad);
+        ad.IsDeleted = true;
+        await unitOfWork.Ads.SaveChangesAsync();
     }
 
+    public async Task DeleteAsync(int adId)
+    {
+        var ad = await unitOfWork.Ads.GetByIdAsync(adId);
+        if (ad == null)
+            throw new Exception("Ad not found");
+        ad.IsDeleted = true;
+        await unitOfWork.Ads.SaveChangesAsync();
+    }
     public async Task<AdResponse> GetByIdAsync(int adId)
     {
         var ad = await unitOfWork.Ads.GetByIdAsync(adId);
@@ -116,6 +127,14 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         return res;
     }
 
+    public async Task<AdResponse> ChangeStatusAsync(int adId, AdStatus status)
+    {
+        var ad = await unitOfWork.Ads.GetByIdAsync(adId);
+        ad.Status = status;
+        await unitOfWork.Ads.SaveChangesAsync();
+        await searchService.IndexAdAsync(ad);
+        return ad.ToResponse(_baseImageUrl);
+    }
     private void ValidateImage(IFormFile file)
     {
         var allowedExtensions = new List<string> { ".jpg", ".png", ".jpeg" };
@@ -128,4 +147,5 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         if (file.Length > maxFileSize)
             throw new BadHttpRequestException("Файл слишком большой. Максимальный размер — 8 МБ");
     }
+    
 }

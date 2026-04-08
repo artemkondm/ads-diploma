@@ -1,8 +1,12 @@
+using Ads.Enums;
+
 namespace Ads.Models;
 
 public class Ad
 {
     public int Id { get; set; }
+    public AdStatus Status { get; set; }
+    public bool IsDeleted { get; set; } = false;
     public string Title { get; set; } = null!;
     public string Description { get; set; }
     public int Price { get; set; }
