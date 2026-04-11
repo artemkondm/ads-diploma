@@ -14,4 +14,5 @@ public interface IAdsService
     Task<AdResponse> GetByIdAsync(int adId);
     Task<List<AdResponse>> GetAllAdsAsync();
     Task<AdResponse> ChangeStatusAsync(int adId, AdStatus status);
+    Task<List<AdResponse>> GetAllAdsOnModerationAsync();
 }

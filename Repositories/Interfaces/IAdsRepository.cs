@@ -10,5 +10,6 @@ public interface IAdsRepository
     Task<Ad?> GetByIdAsync(int adId);
     Task<List<Ad>> GetAllAdsByUserIdAsync(int userId);
     Task<List<Ad>> GetAllAdsAsync();
+    Task<List<Ad>> GetAllAdsOnModerationAsync();
     Task SaveChangesAsync();
 }

@@ -28,9 +28,6 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         if (user == null)
             throw new Exception($"User with id {userId} not found");
         
-        // ValidateImage(request.Image);
-        // string thumbUrl = await imageService.UploadImageAsync(request.Image);
-        
         var address = $"{request.Region}, {request.City}, {request.Street}, {request.House}";
         var geoResult = await geoService.GeocodeAsync(address);
         if (geoResult is null)
@@ -119,12 +116,7 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
     public async Task<List<AdResponse>> GetAllAdsAsync()
     {
         var ads = await unitOfWork.Ads.GetAllAdsAsync();
-        var res = new List<AdResponse>();
-        foreach (var ad in ads)
-        {
-            res.Add(ad.ToResponse(_baseImageUrl));
-        }
-        return res;
+        return ads.Select(ad => ad.ToResponse(_baseImageUrl)).ToList();
     }
 
     public async Task<AdResponse> ChangeStatusAsync(int adId, AdStatus status)
@@ -143,9 +135,14 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         if (!allowedExtensions.Contains(extension))
             throw new BadHttpRequestException("Допустимы только изображения .jpg, .jpeg, .png");
         
-        long maxFileSize = 8 * 1024 * 1024;
+        const long maxFileSize = 8 * 1024 * 1024;
         if (file.Length > maxFileSize)
             throw new BadHttpRequestException("Файл слишком большой. Максимальный размер — 8 МБ");
     }
-    
+
+    public async Task<List<AdResponse>> GetAllAdsOnModerationAsync()
+    {
+        var ads = await unitOfWork.Ads.GetAllAdsOnModerationAsync();
+        return ads.Select(ad => ad.ToResponse(_baseImageUrl)).ToList();
+    }
 }

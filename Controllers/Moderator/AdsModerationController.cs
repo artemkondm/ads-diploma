@@ -13,4 +13,10 @@ public class AdsModerationController(IAdsService adsService) : ModeratorBaseCont
     {
         return Ok(await adsService.ChangeStatusAsync(adId, status));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAdsOnModerationAsync()
+    {
+        return Ok(await adsService.GetAllAdsOnModerationAsync());
+    }
 }

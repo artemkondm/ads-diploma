@@ -1,33 +1,27 @@
 using Ads.Database;
+using Ads.Enums;
 using Ads.Models;
 using Ads.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Ads.Repositories;
 
-public class AdsRepository : IAdsRepository
+public class AdsRepository(AppDbContext context) : IAdsRepository
 {
-    private readonly AppDbContext _context;
-
-    public AdsRepository(AppDbContext context)
-    {
-        _context = context;
-    }
-
     public async Task AddAsync(Ad ad)
     {
-        _context.Add(ad);
+        context.Add(ad);
     }
 
     public async Task DeleteAsync(Ad ad)
     {
-        _context.Remove(ad);
-        await _context.SaveChangesAsync();
+        context.Remove(ad);
+        await context.SaveChangesAsync();
     }
 
     public async Task<Ad?> GetByIdAsync(int adId)
     {
-        return await _context.Ads
+        return await context.Ads
             .Include(a => a.Images)
             .Include(a => a.Location)
                 .ThenInclude(l => l.City)
@@ -36,13 +30,20 @@ public class AdsRepository : IAdsRepository
     }
 
     public async Task<List<Ad>> GetAllAdsByUserIdAsync(int userId) 
-        => await _context.Ads.Where(a => a.UserId == userId).ToListAsync();
+        => await context.Ads.Where(a => a.UserId == userId).ToListAsync();
     
-    public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
+    public async Task SaveChangesAsync() => await context.SaveChangesAsync();
     
-    public async Task<List<Ad>> GetAllAdsAsync() => await _context.Ads
+    public async Task<List<Ad>> GetAllAdsAsync() => await context.Ads
         .Include(a => a.Location)
         .ThenInclude(l => l.City)
         .ThenInclude(c => c.Region)
+        .ToListAsync();
+    
+    public async Task<List<Ad>> GetAllAdsOnModerationAsync() => await context.Ads
+        .Include(a => a.Location)
+        .ThenInclude(l => l.City)
+        .ThenInclude(c => c.Region)
+        .Where(a => a.Status == AdStatus.OnModeration)
         .ToListAsync();
 }

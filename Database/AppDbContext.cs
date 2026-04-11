@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Region> Regions => Set<Region>();
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<Chat> Chats => Set<Chat>();
+    public DbSet<Review> Reviews => Set<Review>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
