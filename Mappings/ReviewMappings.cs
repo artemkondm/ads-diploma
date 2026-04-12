@@ -17,4 +17,18 @@ public static class ReviewMappings
             review.Rating
         );
     }
+
+    public static ReviewModerationResponse ToModerationResponse(this Review review)
+    {
+        return new ReviewModerationResponse(
+            review.ReviewerId,
+            review.Reviewer.Name,
+            review.AdId,
+            review.Ad.Title,
+            review.Comment,
+            review.Date,
+            review.Rating,
+            review.ChatId
+        );
+    }
 }

@@ -127,6 +127,19 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         await searchService.IndexAdAsync(ad);
         return ad.ToResponse(_baseImageUrl);
     }
+
+    public async Task<AdResponse> MakeInactiveAsync(int userId, int adId)
+    {
+        var ad = await unitOfWork.Ads.GetByIdAsync(adId);
+        if (ad == null)
+            throw new Exception("Ad not found");
+        
+        if (userId != ad.UserId)
+            throw new UnauthorizedAccessException();
+        ad.Status = AdStatus.Inactive;
+        await unitOfWork.Ads.SaveChangesAsync();
+        return ad.ToResponse(_baseImageUrl);
+    }
     private void ValidateImage(IFormFile file)
     {
         var allowedExtensions = new List<string> { ".jpg", ".png", ".jpeg" };

@@ -4,5 +4,6 @@ public enum AdStatus
 {
     OnModeration,
     Active,
-    Inactive
+    Inactive,
+    Declined
 }

@@ -14,10 +14,10 @@ public class ReviewService(IReviewRepository reviewRepository, IUnitOfWork unitO
         return reviews.Select(r => r.ToResponse()).ToList();
     }
 
-    public async Task<IEnumerable<ReviewResponse>> GetAllReviewsOnModerationAsync()
+    public async Task<IEnumerable<ReviewModerationResponse>> GetAllReviewsOnModerationAsync()
     {
         var reviews = await reviewRepository.GetAllReviewsOnModerationAsync();
-        return reviews.Select(r => r.ToResponse()).ToList();
+        return reviews.Select(r => r.ToModerationResponse()).ToList();
     }
 
     public async Task AddReviewAsync(int userId, ReviewRequest reviewRequest)

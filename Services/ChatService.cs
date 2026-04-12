@@ -29,6 +29,17 @@ public class ChatService(IUnitOfWork unitOfWork, IHubContext<ChatHub> hubContext
 
         return await unitOfWork.Messages.FindMessagesAsync(chatId);
     }
+    
+    public async Task<IEnumerable<Message>> GetChatMessagesAsync(int chatId)
+    {
+        var chat = await unitOfWork.Chats.GetByIdAsync(chatId);
+        if (chat == null)
+        {
+            throw new Exception("Чат не существует");
+        }
+
+        return await unitOfWork.Messages.FindMessagesAsync(chatId);
+    }
 
     public async Task<IEnumerable<Chat>> GetUserChatsAsync(int userId)
     {

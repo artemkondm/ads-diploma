@@ -6,6 +6,6 @@ namespace Ads.Services.Interfaces;
 public interface IReviewService
 {
     Task<IEnumerable<ReviewResponse>> GetAllReviewsOnUserAsync(int sellerId);
-    Task<IEnumerable<ReviewResponse>> GetAllReviewsOnModerationAsync();
+    Task<IEnumerable<ReviewModerationResponse>> GetAllReviewsOnModerationAsync();
     Task AddReviewAsync(int userId, ReviewRequest review);
 }

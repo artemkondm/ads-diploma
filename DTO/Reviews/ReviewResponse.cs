@@ -9,3 +9,14 @@ public record ReviewResponse(
     DateTime Date,
     int Rating
     );
+    
+public record ReviewModerationResponse(
+    int ReviewerId,
+    string ReviewerName,
+    int AdId,
+    string AdTitle,
+    string Comment,
+    DateTime Date,
+    int Rating,
+    int ChatId
+    );

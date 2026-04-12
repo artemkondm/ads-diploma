@@ -1,4 +1,5 @@
 using Ads.DTO.Ads;
+using Ads.Enums;
 using Ads.Mappings;
 using Ads.Models;
 using Ads.Services.Interfaces;
@@ -54,6 +55,14 @@ public class AdsController(IAdsService adsService) : ControllerBase
         return NoContent();
     }
 
+    [Authorize]
+    [HttpPatch("{adId}/change-status")]
+    public async Task<IActionResult> MakeInactiveAsync(int adId)
+    {
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+        return Ok(await adsService.MakeInactiveAsync(userId, adId));
+    }
+    
     [HttpGet]
     public async Task<IActionResult> GetAds()
     {

@@ -13,6 +13,7 @@ public interface IAdsService
     Task DeleteAsync(int adId);
     Task<AdResponse> GetByIdAsync(int adId);
     Task<List<AdResponse>> GetAllAdsAsync();
+    Task<AdResponse> MakeInactiveAsync(int userId, int adId);
     Task<AdResponse> ChangeStatusAsync(int adId, AdStatus status);
     Task<List<AdResponse>> GetAllAdsOnModerationAsync();
 }

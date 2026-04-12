@@ -26,6 +26,7 @@ public class AdsRepository(AppDbContext context) : IAdsRepository
             .Include(a => a.Location)
                 .ThenInclude(l => l.City)
                     .ThenInclude(c => c.Region)
+            .Where(a => a.Status == AdStatus.Active)
             .FirstOrDefaultAsync(a => a.Id == adId);
     }
 
@@ -38,12 +39,14 @@ public class AdsRepository(AppDbContext context) : IAdsRepository
         .Include(a => a.Location)
         .ThenInclude(l => l.City)
         .ThenInclude(c => c.Region)
+        .Where(a => a.Status == AdStatus.Active)
         .ToListAsync();
     
     public async Task<List<Ad>> GetAllAdsOnModerationAsync() => await context.Ads
         .Include(a => a.Location)
         .ThenInclude(l => l.City)
         .ThenInclude(c => c.Region)
+        .Include(a => a.Images)
         .Where(a => a.Status == AdStatus.OnModeration)
         .ToListAsync();
 }
