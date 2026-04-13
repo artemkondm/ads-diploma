@@ -1,3 +1,5 @@
+using Ads.Services.Interfaces;
+
 namespace Ads.Repositories.Interfaces;
 
 public interface IUnitOfWork : IDisposable
@@ -8,6 +10,7 @@ public interface IUnitOfWork : IDisposable
     IAdsRepository Ads { get; }
     IMessageRepository Messages { get; }
     IChatRepository Chats { get; }
+    IFavoritesRepository Favorites { get; }
 
     Task<int> SaveChangesAsync();
 }

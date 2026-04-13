@@ -17,12 +17,10 @@ public class RegionRepository : IRegionRepository
     public async Task<Region> GetOrAddAsync(string regionName)
     {
         var region = await _context.Regions.FirstOrDefaultAsync(r => r.Name == regionName);
-        if (region == null)
-        {
-            region = new Region() { Name = regionName };
-            _context.Regions.Add(region);
-            await _context.AddAsync(region);
-        }
+        if (region != null) return region;
+        region = new Region() { Name = regionName };
+        _context.Regions.Add(region);
+        await _context.AddAsync(region);
         return region;
     }
 }

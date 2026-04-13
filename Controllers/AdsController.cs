@@ -11,7 +11,7 @@ namespace Ads.Controllers;
 
 [ApiController]
 [Route("api/ads")]
-public class AdsController(IAdsService adsService) : ControllerBase
+public class AdsController(IAdsService adsService, IFavoritesService favoritesService) : ControllerBase
 {
     [Authorize]
     [HttpPost("create")]
@@ -34,6 +34,14 @@ public class AdsController(IAdsService adsService) : ControllerBase
     {
         var ad = await adsService.GetByIdAsync(adId);
         return Ok(ad);
+    }
+    [Authorize]
+    [HttpGet("favorites")]
+    public async Task<IActionResult> GetFavoriteAds()
+    {
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var favIds = await favoritesService.GetUserFavoriteAdsAsync(userId);
+        return Ok(await adsService.GetAdsByIdsAsync(favIds));
     }
 
     [Authorize]

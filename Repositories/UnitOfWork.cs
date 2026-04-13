@@ -13,6 +13,7 @@ public class UnitOfWork : IUnitOfWork
     public IAdsRepository Ads { get; }
     public IMessageRepository Messages { get; }
     public IChatRepository Chats { get; }
+    public IFavoritesRepository Favorites { get; }
 
     public UnitOfWork(AppDbContext context)
     {
@@ -23,6 +24,7 @@ public class UnitOfWork : IUnitOfWork
         Ads = new AdsRepository(_context);
         Messages = new MessageRepository(_context);
         Chats = new ChatRepository(_context);
+        Favorites = new FavoritesRepository(_context);
     }
 
     public async Task<int> SaveChangesAsync()

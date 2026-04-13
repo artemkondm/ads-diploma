@@ -49,4 +49,14 @@ public class AdsRepository(AppDbContext context) : IAdsRepository
         .Include(a => a.Images)
         .Where(a => a.Status == AdStatus.OnModeration)
         .ToListAsync();
+    
+    public async Task<List<Ad>> GetAdsByIdsAsync(IEnumerable<int> adIds)
+    {
+        return await context.Ads
+            .AsNoTracking()
+            .Include(a => a.Images)
+            .Include(a => a.Location) 
+            .Where(ad => adIds.Contains(ad.Id))
+            .ToListAsync();
+    }
 }

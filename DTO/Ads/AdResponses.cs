@@ -11,10 +11,10 @@ public record AdResponse(
     int CategoryId,
     DateTime DateCreated,
     int UserId,
+    bool? IsFavorited,
     LocationResponse LocationResponse,
     List<ImageResponse> Images
     );
-
 
 public record AdListResponse(
     string Title,

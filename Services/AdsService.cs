@@ -11,7 +11,7 @@ using Elastic.Clients.Elasticsearch.Snapshot;
 namespace Ads.Services;
 
 public class AdsService(IUserRepository userRepository, IGeoService geoService, IUnitOfWork unitOfWork, 
-    ISearchService searchService, IImageService imageService, IConfiguration config)
+    ISearchService searchService, IImageService imageService, IFavoritesService favoritesService, IConfiguration config)
     : IAdsService
 {
     private readonly string _baseImageUrl = config["BaseUrls:Images"];
@@ -113,9 +113,14 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
         return ad.ToResponse(_baseImageUrl);
     }
 
-    public async Task<List<AdResponse>> GetAllAdsAsync()
+    public async Task<List<AdResponse>> GetAllAdsAsync(int? userId)
     {
         var ads = await unitOfWork.Ads.GetAllAdsAsync();
+        if (userId != null)
+        {
+            var favs = await favoritesService.GetUserFavoriteAdsAsync((int)userId);
+            return ads.Select(ad => ad.ToResponse(_baseImageUrl, favs)).ToList();
+        }
         return ads.Select(ad => ad.ToResponse(_baseImageUrl)).ToList();
     }
 
@@ -157,5 +162,13 @@ public class AdsService(IUserRepository userRepository, IGeoService geoService, 
     {
         var ads = await unitOfWork.Ads.GetAllAdsOnModerationAsync();
         return ads.Select(ad => ad.ToResponse(_baseImageUrl)).ToList();
+    }
+
+    public async Task<List<AdResponse>> GetAdsByIdsAsync(List<int> adIds)
+    {
+        if (adIds.Count == 0)
+            return new List<AdResponse>();
+        var ads = await unitOfWork.Ads.GetAdsByIdsAsync(adIds);
+        return ads.Select(a => a.ToResponse(_baseImageUrl, adIds)).ToList();
     }
 }

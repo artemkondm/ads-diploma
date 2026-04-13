@@ -5,7 +5,7 @@ namespace Ads.Mappings;
 
 public static class AdMappings
 {
-    public static AdResponse ToResponse(this Ad ad, string baseUrl)
+    public static AdResponse ToResponse(this Ad ad, string baseUrl, List<int>? favoriteAdIds = null)
     {
         
         var images = ad.Images.Select(img => new ImageResponse(
@@ -13,7 +13,6 @@ public static class AdMappings
             ThumbnailUrl: img.ThumbnailUrl != null ? $"{baseUrl}{img.ThumbnailUrl}" : null,
             IsMain: img.IsMain
         )).ToList();
-        
         return new AdResponse(
             ad.Id,
             ad.Title,
@@ -22,6 +21,7 @@ public static class AdMappings
             ad.CategoryId,
             ad.DateCreated,
             ad.UserId,
+            favoriteAdIds?.Contains(ad.Id) ?? false,
             ad.Location.ToResponse(),
             images
         );

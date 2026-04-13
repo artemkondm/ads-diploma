@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<Chat> Chats => Set<Chat>();
     public DbSet<Review> Reviews => Set<Review>();
+    public DbSet<AdFavorite> FavoriteAds => Set<AdFavorite>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -24,6 +25,16 @@ public class AppDbContext : DbContext
             .Property(u => u.Status)
             .HasConversion<string>();
         
+        modelBuilder.Entity<AdFavorite>()
+            .HasKey(f => new { f.AdId, f.UserId });
+        modelBuilder.Entity<AdFavorite>()
+            .HasOne(f => f.User)
+            .WithMany(u => u.FavoriteAds)
+            .HasForeignKey(f => f.UserId);
+        modelBuilder.Entity<AdFavorite>()
+            .HasOne(f => f.Ad)
+            .WithMany()
+            .HasForeignKey(f => f.AdId);
         
         modelBuilder.Entity<Ad>()
             .Property(a => a.Status)
