@@ -45,6 +45,15 @@ public class AdsController(IAdsService adsService, IFavoritesService favoritesSe
     }
 
     [Authorize]
+    [HttpPost("favorite/{adId}")]
+    public async Task<IActionResult> ToggleFavorite(int adId)
+    {
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+        await favoritesService.ToggleFavoriteAsync(userId, adId);
+        return Ok();
+    }
+
+    [Authorize]
     [HttpPut("{adId}")]
     public async Task<IActionResult> UpdateAdAsync(int adId, AdUpdateRequest request)
     {

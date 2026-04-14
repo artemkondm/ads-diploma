@@ -11,6 +11,7 @@ public record AdResponse(
     int CategoryId,
     DateTime DateCreated,
     int UserId,
+    bool IsActive,
     bool? IsFavorited,
     LocationResponse LocationResponse,
     List<ImageResponse> Images

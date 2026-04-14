@@ -1,4 +1,5 @@
 using Ads.DTO.Ads;
+using Ads.Enums;
 using Ads.Models;
 
 namespace Ads.Mappings;
@@ -21,6 +22,7 @@ public static class AdMappings
             ad.CategoryId,
             ad.DateCreated,
             ad.UserId,
+            ad.Status == AdStatus.Active,
             favoriteAdIds?.Contains(ad.Id) ?? false,
             ad.Location.ToResponse(),
             images

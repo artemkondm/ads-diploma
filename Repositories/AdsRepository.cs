@@ -31,7 +31,13 @@ public class AdsRepository(AppDbContext context) : IAdsRepository
     }
 
     public async Task<List<Ad>> GetAllAdsByUserIdAsync(int userId) 
-        => await context.Ads.Where(a => a.UserId == userId).ToListAsync();
+        => await context.Ads
+            .Where(a => a.UserId == userId)
+            .Include(a => a.Location)
+            .ThenInclude(l => l.City)
+            .ThenInclude(c => c.Region)
+            .Include(a => a.Images)
+            .ToListAsync();
     
     public async Task SaveChangesAsync() => await context.SaveChangesAsync();
     
@@ -39,6 +45,7 @@ public class AdsRepository(AppDbContext context) : IAdsRepository
         .Include(a => a.Location)
         .ThenInclude(l => l.City)
         .ThenInclude(c => c.Region)
+        .Include(a => a.Images)
         .Where(a => a.Status == AdStatus.Active)
         .ToListAsync();
     
@@ -55,7 +62,9 @@ public class AdsRepository(AppDbContext context) : IAdsRepository
         return await context.Ads
             .AsNoTracking()
             .Include(a => a.Images)
-            .Include(a => a.Location) 
+            .Include(a => a.Location)
+            .ThenInclude(l => l.City)
+            .ThenInclude(c => c.Region)
             .Where(ad => adIds.Contains(ad.Id))
             .ToListAsync();
     }

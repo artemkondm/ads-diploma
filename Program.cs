@@ -17,6 +17,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdsService, AdsService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<IFavoritesService, FavoritesService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddHttpClient<IGeoService, GeoService>()
     .ConfigureHttpClient(c =>
     {
@@ -25,8 +29,7 @@ builder.Services.AddHttpClient<IGeoService, GeoService>()
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<JwtService>();
