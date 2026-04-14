@@ -14,6 +14,7 @@ public static class ProfileMappings
             user.Email,
             user.RegistrationDate,
             ads.Count,
+            user.Rating,
             ads
         );
     }

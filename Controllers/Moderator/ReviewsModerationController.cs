@@ -1,4 +1,5 @@
 using Ads.DTO;
+using Ads.Enums;
 using Ads.Services;
 using Ads.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -25,5 +26,11 @@ public class ReviewsModerationController(IReviewService reviewService, IChatServ
         {
             return Unauthorized(ex.Message);
         }
+    }
+
+    public async Task<IActionResult> ChangeReviewStatus(int reviewId, ReviewStatus status)
+    {
+        await reviewService.ChangeStatusAsync(reviewId, status);
+        return Ok();
     }
 }

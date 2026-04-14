@@ -1,4 +1,5 @@
 using Ads.DTO;
+using Ads.Enums;
 using Ads.Mappings;
 using Ads.Models;
 using Ads.Repositories.Interfaces;
@@ -38,5 +39,20 @@ public class ReviewService(IReviewRepository reviewRepository, IUnitOfWork unitO
         };
         await reviewRepository.AddReviewAsync(review);
     }
-    
+
+    public async Task ChangeStatusAsync(int reviewId, ReviewStatus status)
+    {
+        var review = await reviewRepository.GetReviewByIdAsync(reviewId);
+        if (review == null)
+            throw new NullReferenceException();
+        review.Status = status;
+        var seller = await userRepository.GetByIdAsync(review.SellerId);
+        var reviews = await reviewRepository.GetAllReviewsBySellerIdAsync(review.SellerId);
+        var reviewsList = reviews.ToList();
+        var sum = reviewsList
+            .Where(r => r.Status == ReviewStatus.Accepted)
+            .Select(r => r.Rating)
+            .Sum();
+        if (seller != null) seller.Rating = (double)sum / reviewsList.Count;
+    }
 }

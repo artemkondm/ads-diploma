@@ -7,6 +7,7 @@ public class User
     public int Id { get; set; }
     public string Name { get; set; }
     public string Email { get; set; } = null!;
+    public double Rating { get; set; } = 0;
     public DateTime RegistrationDate { get; set; }
     public string PasswordHash { get; set; } = null!;
     public virtual ICollection<AdFavorite> FavoriteAds { get; set; } = new List<AdFavorite>();

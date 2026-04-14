@@ -36,4 +36,9 @@ public class ReviewRepository(AppDbContext context) : IReviewRepository
             .ToListAsync();
         return reviews;
     }
+
+    public async Task<Review?> GetReviewByIdAsync(int reviewId)
+    {
+        return await context.Reviews.Where(r => r.Id == reviewId).FirstOrDefaultAsync();
+    }
 }
